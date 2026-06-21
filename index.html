@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PetMatch | e-Commerce para mascotas</title>
+  <style>
+    :root {
+      --bg: #f2f9fa; 
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-strong: #ffffff;
+      --primary: #8cd4ca; 
+      --primary-dark: #5fa89e; 
+      --secondary: #ffb7c5; 
+      --secondary-dark: #e092a1; 
+      --accent: #bce7ce; 
+      --accent-soft: #eef9f3; 
+      --text: #2f4347; 
+      --muted: #798e91;
+      --border: #dbeeed;
+      --success: #7bc79e;
+      --danger: #e59797;
+      --shadow: 0 14px 34px rgba(140, 212, 202, 0.15);
+      --shadow-soft: 0 8px 22px rgba(140, 212, 202, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(188, 231, 206, 0.4), transparent 30%),
+        radial-gradient(circle at top right, rgba(140, 212, 202, 0.3), transparent 25%),
+        linear-gradient(180deg, #f7fcfd 0%, #edf7f8 100%);
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1280px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    /* Barra Superior Cambiadora de Roles */
+    .view-switcher-bar {
+      background: #2f4347;
+      color: white;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .view-switcher-bar select {
+      width: auto;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: #415b60;
+      color: white;
+      border: 1px solid #55757b;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .hero { padding: 24px 0 18px; }
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #a2e8dd, #76ffd4); 
+      color: var(--text);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.35fr .95fr;
+      gap: 22px;
+      padding: 28px;
+    }
+    .hero-card::before {
+      content: "🐾";
+      position: absolute;
+      right: 24px;
+      top: 18px;
+      font-size: 6.2rem;
+      opacity: .14;
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 13px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.4);
+      font-size: .91rem;
+      font-weight: 700;
+      letter-spacing: .02em;
+      backdrop-filter: blur(5px);
+      color: var(--primary-dark);
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(2.1rem, 4vw, 3.35rem);
+      line-height: 1.02;
+      color: var(--text);
+    }
+
+    .hero p {
+      max-width: 62ch;
+      margin: 0;
+      color: var(--text);
+      font-size: 1.05rem;
+      line-height: 1.4;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    button, .btn {
+      border: 0;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      border-radius: 15px;
+      font: inherit;
+      font-weight: 800;
+    }
+    button:hover, .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--secondary); 
+      color: var(--text);
+      padding: 14px 22px;
+      box-shadow: 0 8px 15px rgba(255, 183, 197, 0.4);
+    }
+    .btn-primary:hover { background: var(--secondary-dark); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.5);
+      color: var(--text);
+      padding: 14px 18px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.7); }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      align-self: stretch;
+    }
+    .hero-stat {
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 18px;
+      min-height: 106px;
+      backdrop-filter: blur(4px);
+    }
+    .hero-stat>small {
+      display: block;
+      color: var(--muted);
+      font-size: .92rem;
+      font-weight: 700;
+    }
+    .hero-stat strong {
+      display: block;
+      margin-top: 10px;
+      font-size: 1.58rem;
+      color: var(--text);
+    }
+
+    main { padding: 8px 0 36px; }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px minmax(0,1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* Clase especial para cuando el administrador oculta el carrito */
+    .layout.admin-layout {
+      grid-template-columns: 300px minmax(0,1fr);
+    }
+
+    .panel {
+      border-radius: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(10px);
+    }
+    .stick { position: sticky; top: 70px; }
+
+    .filters, .cart-panel { padding: 20px; }
+    .catalog-panel { padding: 20px; min-width: 0; }
+
+    .panel h2, .panel h3 { margin: 0 0 6px; font-size: 1.18rem; color: var(--text); }
+    .subtext { color: var(--muted); margin: 0 0 14px; font-size: .96rem; }
+
+    .section-label {
+      display: block;
+      margin: 16px 0 10px;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      outline: none;
+      font: inherit;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
+      border-color: var(--primary-dark);
+      box-shadow: 0 0 0 4px rgba(140, 212, 202, 0.2);
+    }
+
+    .button-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+    .btn-filter, .btn-submit {
+      background: var(--secondary); color: var(--text); padding: 12px 14px;
+      box-shadow: 0 4px 10px rgba(255, 183, 197, 0.3);
+    }
+    .btn-filter:hover, .btn-submit:hover { background: var(--secondary-dark); }
+    
+    .btn-muted, .btn-close { background: #e6f3f2; color: var(--text); padding: 12px 14px; }
+    .btn-muted:hover, .btn-close:hover { background: #d7eae8; }
+
+    .catalog-header {
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
+    }
+    .chips { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .chip {
+      background: #eef8f7; border: 1px solid var(--border); border-radius: 999px; padding: 10px 14px; font-size: .9rem; font-weight: 800; color: var(--primary-dark);
+    }
+
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card {
+      position: relative; overflow: hidden; background: var(--surface-strong); border-radius: 22px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0 0 auto 0; height: 6px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--secondary));
+    }
+    .card-top { display: flex; gap: 10px; justify-content: space-between; align-items: start; padding-top: 8px; }
+
+    .emoji {
+      width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(180deg, #f2fdfb, #dffbf6); font-size: 1.7rem; flex: 0 0 auto; border: 1px solid var(--border);
+    }
+    .title-wrap { min-width: 0; }
+    .title { margin: 0; font-size: 1.08rem; font-weight: 900; }
+    .brand { color: var(--muted); font-size: .92rem; margin-top: 3px; }
+    .price { color: var(--primary-dark); font-size: 1.28rem; font-weight: 900; white-space: nowrap; }
+
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge { border-radius: 999px; padding: 7px 10px; font-size: .77rem; font-weight: 900; letter-spacing: .02em; }
+    .badge.category { background: #eef9f7; color: #3d7e75; }
+    .badge.dog { background: #fff2f5; color: #b55e6f; } 
+    .badge.cat { background: #eef3fe; color: #4a6fa5; } 
+    .badge.both { background: #eaf7f1; color: #3d8c64; } 
+    .badge.low { background: #fff2f2; color: #c97171; }
+    .badge.ok { background: #eefdf6; color: #4fa375; }
+
+    .desc { color: var(--muted); font-size: .93rem; line-height: 1.45; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; font-size: .88rem; color: var(--muted); }
+    .meta-grid strong { display: block; color: var(--text); font-size: .94rem; margin-bottom: 2px; }
+
+    .card-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: auto; }
+    .qty-input { width: 78px !important; text-align: center; }
+    .btn-add { background: var(--secondary); color: var(--text); padding: 12px 14px; box-shadow: 0 4px 8px rgba(255, 183, 197, 0.3); }
+    .btn-add:hover { background: var(--secondary-dark); }
+
+    .inline-edit-form {
+      background: #f4fbfb; border: 1px dashed var(--primary); padding: 12px; border-radius: 14px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .inline-edit-form label { font-size: 0.82rem; font-weight: 700; color: var(--primary-dark); }
+    .inline-edit-form input { padding: 8px 10px; border-radius: 8px; }
+
+    .empty { text-align: center; padding: 30px 18px; background: white; border-radius: 20px; border: 1px dashed var(--border); color: var(--muted); }
+
+    .cart-list { display: grid; gap: 10px; margin-top: 14px; }
+    .cart-item { background: white; border: 1px solid var(--border); border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+    .cart-row { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+    .cart-name { font-weight: 800; }
+    .cart-meta { color: var(--muted); font-size: .88rem; }
+    .cart-actions { display: flex; gap: 8px; }
+    .mini-btn { background: #f0f7f6; color: var(--text); padding: 8px 10px; border-radius: 12px; font-size: .85rem; font-weight: 800; }
+    .mini-btn:hover { background: #e0eeec; }
+    .mini-btn.remove { background: #ffebeb; color: #c97171; }
+    .mini-btn.remove:hover { background: #ffd6d6; }
+
+    .cart-summary { background: linear-gradient(180deg, #f3fbf9, #fdfffe); border-radius: 18px; border: 1px solid var(--border); padding: 14px; margin-top: 16px; }
+    .cart-summary .row { display: flex; justify-content: space-between; gap: 12px; margin: 8px 0; font-size: .95rem; }
+    .cart-summary .total { font-size: 1.12rem; font-weight: 900; color: var(--primary-dark); border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 10px; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 16px; z-index: 120; background: rgba(47, 67, 71, 0.4); backdrop-filter: blur(3px);
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal {
+      width: min(860px, 100%); max-height: 92vh; overflow: auto; background: linear-gradient(180deg, #fff, #f7fcfb); border-radius: 28px; padding: 22px; border: 1px solid var(--border); box-shadow: 0 28px 60px rgba(47, 67, 71, 0.15);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: start; gap: 14px; margin-bottom: 18px; }
+    .modal-title { margin: 0; font-size: 1.45rem; color: var(--text); }
+    .modal-text { margin: 6px 0 0; color: var(--muted); font-size: 0.9rem; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .field { display: grid; gap: 8px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-weight: 800; font-size: .93rem; color: var(--text); }
+
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 12px; }
+    .checkbox-pill { display: inline-flex; align-items: center; gap: 10px; background: white; border-radius: 14px; border: 1px solid var(--border); padding: 12px 14px; font-weight: 800; }
+
+    .feedback { display: none; margin-top: 14px; padding: 12px 14px; border-radius: 14px; font-weight: 700; }
+    .feedback.error { display: block; background: #ffebeb; color: #c97171; }
+    .feedback.success { display: block; background: #eaf7f1; color: #3d8c64; }
+
+    .footer { padding: 14px 0 32px; color: var(--muted); text-align: center; font-size: .95rem; }
+
+    @media (max-width: 1130px) {
+      .layout { grid-template-columns: 280px 1fr; }
+      .cart-column { grid-column: 1 / -1; }
+      .cart-column .stick { position: static; }
+    }
+    @media (max-width: 900px) {
+      .hero-card { grid-template-columns: 1fr; }
+      .hero-grid { grid-template-columns: repeat(4, 1fr); }
+      .layout, .layout.admin-layout { grid-template-columns: 1fr; }
+      .stick { position: static; }
+    }
+    @media (max-width: 700px) {
+      .hero-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-grid, .meta-grid { grid-template-columns: 1fr; }
+      .catalog-header { align-items: start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="view-switcher-bar">
+    <span>👤 ROLES DE ENTRADA (SIMULADOR):</span>
+    <select id="roleSwitcher">
+      <option value="client">Cliente (Catálogo limpio, carrito de compra interactivo)</option>
+      <option value="admin">Administrador (Acceso total, edición de precios/stock y control crítico)</option>
+    </select>
+  </div>
+
+  <header class="hero">
+    <div class="container">
+      <section class="hero-card">
+        <div>
+          <span class="eyebrow">🐾 Tienda completa para mascotas</span>
+          <h1>PetMatch</h1>
+          <p>Tu e-commerce de confianza para el bienestar animal. Explora un catálogo inteligente con filtros avanzados por tipo de mascota (perros y gatos), gestión de carrito interactivo y productos seleccionados adaptados a las necesidades reales de tu compañero.</p>
+          <div class="hero-actions" id="adminHeroActions">
+            <button class="btn btn-primary" id="openModalBtn">+ Añadir producto</button>
+            <a class="btn btn-secondary" href="#catalogo">Ver catálogo</a>
+          </div>
+        </div>
+        <div class="hero-grid">
+          <div class="hero-stat"><small>Productos</small><strong id="heroProducts">0</strong></div>
+          <div class="hero-stat"><small>Categorías</small><strong id="heroCategories">0</strong></div>
+          <div class="hero-stat"><small>Para Perros</small><strong id="heroDogsCount">0</strong></div>
+          <div class="hero-stat"><small>Para Gatos</small><strong id="heroCatsCount">0</strong></div>
+        </div>
+      </section>
+    </div>
+  </header>
+
+  <main class="container" id="catalogo">
+    <section class="layout" id="mainLayout">
+      <aside class="panel filters stick">
+        <h2>Filtrar catálogo</h2>
+        <p class="subtext">Busca por nombre o marca, filtra por categoría o por el tipo de mascota adecuado.</p>
+
+        <label class="section-label" for="searchInput">Buscar</label>
+        <input id="searchInput" type="text" placeholder="Ej.: snack, collar, correa..." />
+
+        <label class="section-label" for="categoryFilter">Categoría</label>
+        <select id="categoryFilter">
+          <option value="">Todas las categorías</option>
+        </select>
+
+        <label class="section-label" for="animalFilter">Mascota destino</label>
+        <select id="animalFilter">
+          <option value="all">Todos los animales</option>
+          <option value="dog">Solo Perros 🐶</option>
+          <option value="cat">Solo Gatos 🐱</option>
+        </select>
+
+        <label class="section-label" for="sortFilter">Ordenar</label>
+        <select id="sortFilter">
+          <option value="featured">Destacados</option>
+          <option value="price-asc">Precio: menor a mayor</option>
+          <option value="price-desc">Precio: mayor a menor</option>
+          <option value="name-asc">Nombre: A-Z</option>
+          <option value="stock-desc">Más stock</option>
+        </select>
+
+        <label class="section-label" for="inStockFilter">Disponibilidad</label>
+        <select id="inStockFilter">
+          <option value="all">Todos los productos en stock</option>
+          <option value="low-stock">Stock bajo (10 unidades o menos)</option>
+        </select>
+
+        <div class="button-row">
+          <button class="btn-filter" id="applyFiltersBtn">Aplicar</button>
+          <button class="btn-muted" id="clearFiltersBtn">Limpiar</button>
+        </div>
+      </aside>
+
+      <section class="panel catalog-panel">
+        <div class="catalog-header">
+          <div>
+            <h2>Catálogo PetMatch</h2>
+            <p class="subtext">Productos para alimentación, juego, higiene, paseo, descanso y cuidado diario.</p>
+          </div>
+          <div class="chips">
+            <span class="chip" id="visibleResultsChip">0 resultados</span>
+            <span class="chip" id="visibleStockChip">Stock visible: 0</span>
+            <button class="btn-filter" id="openModalBtnSecondary" style="padding:10px 14px;">Nuevo registro</button>
+          </div>
+        </div>
+        <div id="productGrid" class="product-grid"></div>
+      </section>
+
+      <aside class="cart-column" id="cartColumn">
+        <div class="panel cart-panel stick">
+          <h3>🛍️ Carrito</h3>
+          <p class="subtext">Simulación de compra rápida con cálculo automático del total.</p>
+          <div id="cartList" class="cart-list"></div>
+          <div id="emptyCart" class="empty" style="margin-top:10px;">Todavía no has añadido productos al carrito.</div>
+          <div class="cart-summary">
+            <div class="row"><span>Líneas</span><strong id="cartLines">0</strong></div>
+            <div class="row"><span>Unidades</span><strong id="cartUnits">0</strong></div>
+            <div class="row total"><span>Total</span><strong id="cartTotal">$ 0</strong></div>
+          </div>
+          <div class="button-row">
+            <button class="btn-filter" id="clearCartBtn">Vaciar carrito</button>
+            <button class="btn-muted" id="simulateCheckoutBtn">Finalizar</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="modalTitle">Alta de producto PetMatch</h3>
+          <p class="modal-text">Asigna los atributos de destino para clasificar correctamente el artículo en el catálogo.</p>
+        </div>
+        <button class="btn-close" id="closeModalBtn">Cerrar</button>
+      </div>
+
+      <form id="productForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="id_producto">id_producto *</label>
+            <input type="text" id="id_producto" required placeholder="Ej.: PET-010" />
+          </div>
+          <div class="field">
+            <label for="codigo_barras">codigo_barras *</label>
+            <input type="text" id="codigo_barras" required placeholder="Ej.: 7791234567890" />
+          </div>
+          <div class="field">
+            <label for="nombre">nombre *</label>
+            <input type="text" id="nombre" required placeholder="Ej.: Collar luminoso" />
+          </div>
+          <div class="field">
+            <label for="marca">marca *</label>
+            <input type="text" id="marca" required placeholder="Ej.: PawStyle" />
+          </div>
+          <div class="field">
+            <label for="categoria">categoria *</label>
+            <input type="text" id="categoria" required placeholder="Ej.: Paseo / Juguetes / Higiene" />
+          </div>
+          <div class="field">
+            <label for="unidad_medida">unidad_medida *</label>
+            <input type="text" id="unidad_medida" required placeholder="Ej.: unidad / pack / 3 kg" />
+          </div>
+          <div class="field">
+            <label for="precio_unitario">precio_unitario (ARS) *</label>
+            <input type="number" id="precio_unitario" min="0" step="1" required placeholder="Ej.: 29900" />
+          </div>
+          <div class="field">
+            <label for="stock_actual">stock_actual *</label>
+            <input type="number" id="stock_actual" min="0" step="1" required placeholder="Ej.: 12" />
+          </div>
+          <div class="field full">
+            <label>Mascota Destino *</label>
+            <div class="checkbox-row">
+              <label class="checkbox-pill"><input type="checkbox" id="apto_perro" checked /> Apto para Perros 🐶</label>
+              <label class="checkbox-pill"><input type="checkbox" id="apto_gato" /> Apto para Gatos 🐱</label>
+            </div>
+          </div>
+        </div>
+        <div id="formFeedback" class="feedback"></div>
+        <div class="button-row" style="margin-top:18px;">
+          <button class="btn-submit" type="submit">Guardar producto</button>
+          <button class="btn-muted" type="button" id="resetFormBtn">Restablecer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">PetMatch demo · Estructura de Datos Homogénea Adaptada · HTML + CSS + JS Puro.</footer>
+
+ <script>
+    const initialProducts = [
+      { id_producto: 'PET-001', codigo_barras: '7790001110001', nombre: 'Pienso premium perro adulto', marca: 'CanLife', categoria: 'Alimentación', precio_unitario: 29900, stock_actual: 18, unidad_medida: '3 kg', apto_perro: true, apto_gato: false },
+      { id_producto: 'PET-002', codigo_barras: '7790001110002', nombre: 'Snack dental felino', marca: 'BarkBites', categoria: 'Alimentación', precio_unitario: 8500, stock_actual: 40, unidad_medida: 'pack x6', apto_perro: false, apto_gato: true },
+      { id_producto: 'PET-003', codigo_barras: '7790001110003', nombre: 'Correa reflectante paseos', marca: 'PawStyle', categoria: 'Paseo', precio_unitario: 17000, stock_actual: 15, unidad_medida: 'unidad', apto_perro: true, apto_gato: true },
+      { id_producto: 'PET-004', codigo_barras: '7790001110004', nombre: 'Cama acolchada reversible', marca: 'NidoPet', categoria: 'Descanso', precio_unitario: 39900, stock_actual: 9, unidad_medida: 'unidad', apto_perro: true, apto_gato: true },
+      { id_producto: 'PET-005', codigo_barras: '7790001110005', nombre: 'Arena aglomerante de bentonita', marca: 'MishiHome', categoria: 'Higiene', precio_unitario: 14750, stock_actual: 27, unidad_medida: '5 l', apto_perro: false, apto_gato: true },
+      { id_producto: 'PET-006', codigo_barras: '7790001110006', nombre: 'Pelota mordedor interactiva', marca: 'ZoomPaw', categoria: 'Juguetes', precio_unitario: 12900, stock_actual: 21, unidad_medida: 'unidad', apto_perro: true, apto_gato: false },
+      { id_producto: 'PET-007', codigo_barras: '7790001110007', nombre: 'Rascador Torre de Tres Niveles', marca: 'MichiGroom', categoria: 'Juguetes', precio_unitario: 45900, stock_actual: 32, unidad_medida: 'unidad', apto_perro: false, apto_gato: true }
+    ];
+
+    const formatter = new Intl.NumberFormat('es-AR', { 
+      style: 'currency', 
+      currency: 'ARS', 
+      minimumFractionDigits: 0, 
+      maximumFractionDigits: 0 
+    });
+
+    const PRODUCT_KEY = 'petmatch_productos';
+    const CART_KEY = 'petmatch_carrito';
+
+    const state = {
+      products: loadState(PRODUCT_KEY, initialProducts),
+      filtered: [],
+      cart: loadState(CART_KEY, []),
+      currentRole: 'client', 
+      editingProductId: null 
+    };
+
+    const adminPanelHTML = `
+      <section id="adminStockSection" class="container" style="margin-top: 40px; margin-bottom: 40px; padding: 24px; background: #fff1f3; border: 2px dashed #e59797; border-radius: 16px; display: none;">
+        <h2 style="color: #c46262; margin-bottom: 8px;">🛠️ Panel de Control de Stock Crítico (Solo Administrador)</h2>
+        <p style="color: var(--muted); margin-bottom: 16px; font-size: 14px;">Productos que se quedaron con stock en 0. Ajusta su precio comercial, dales entrada sumando stock o elimínalos en forma definitiva.</p>
+        <div id="adminOutofStockList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      </section>
+    `;
+    document.querySelector('main').insertAdjacentHTML('afterend', adminPanelHTML);
+
+    const dom = {
+      roleSwitcher: document.getElementById('roleSwitcher'),
+      adminHeroActions: document.getElementById('adminHeroActions'),
+      adminStockSection: document.getElementById('adminStockSection'),
+      openModalBtnSecondary: document.getElementById('openModalBtnSecondary'),
+      heroProducts: document.getElementById('heroProducts'),
+      heroCategories: document.getElementById('heroCategories'),
+      heroDogsCount: document.getElementById('heroDogsCount'),
+      heroCatsCount: document.getElementById('heroCatsCount'),
+      searchInput: document.getElementById('searchInput'),
+      categoryFilter: document.getElementById('categoryFilter'),
+      animalFilter: document.getElementById('animalFilter'),
+      sortFilter: document.getElementById('sortFilter'),
+      inStockFilter: document.getElementById('inStockFilter'),
+      applyFiltersBtn: document.getElementById('applyFiltersBtn'),
+      clearFiltersBtn: document.getElementById('clearFiltersBtn'),
+      visibleResultsChip: document.getElementById('visibleResultsChip'),
+      visibleStockChip: document.getElementById('visibleStockChip'),
+      productGrid: document.getElementById('productGrid'),
+      cartList: document.getElementById('cartList'),
+      emptyCart: document.getElementById('emptyCart'),
+      cartLines: document.getElementById('cartLines'),
+      cartUnits: document.getElementById('cartUnits'),
+      cartTotal: document.getElementById('cartTotal'),
+      clearCartBtn: document.getElementById('clearCartBtn'),
+      simulateCheckoutBtn: document.getElementById('simulateCheckoutBtn'),
+      modalBackdrop: document.getElementById('modalBackdrop'),
+      openModalBtn: document.getElementById('openModalBtn'),
+      closeModalBtn: document.getElementById('closeModalBtn'),
+      productForm: document.getElementById('productForm'),
+      formFeedback: document.getElementById('formFeedback'),
+      resetFormBtn: document.getElementById('resetFormBtn'),
+      adminOutofStockList: document.getElementById('adminOutofStockList'),
+      mainLayout: document.getElementById('mainLayout'),
+      cartColumn: document.getElementById('cartColumn')
+    };
+
+    function loadState(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return structuredCloneSafe(fallback);
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : structuredCloneSafe(fallback);
+      } catch {
+        return structuredCloneSafe(fallback);
+      }
+    }
+
+    function structuredCloneSafe(value) { return JSON.parse(JSON.stringify(value)); }
+    function saveState(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function normalize(text) {
+      return String(text || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    }
+
+    function getCategories() {
+      return [...new Set(state.products.map(p => p.categoria).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    }
+
+    function fillCategoryOptions() {
+      const currentValue = dom.categoryFilter.value;
+      const options = getCategories();
+      dom.categoryFilter.innerHTML = '<option value="">Todas las categorías</option>' + options.map(cat => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`).join('');
+      if (options.includes(currentValue)) dom.categoryFilter.value = currentValue;
+    }
+
+    function escapeHtml(text) {
+      return String(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+    }
+
+    function productEmoji(category) {
+      const map = { 'Alimentación': '🍖', 'Paseo': '🦮', 'Descanso': '🛏️', 'Higiene': '🧼', 'Juguetes': '🧸', 'Accesorios': '🎀' };
+      return map[category] || '🐾';
+    }
+
+    function getAnimalBadgeAndLabel(product) {
+      if (product.apto_perro && product.apto_gato) return '<span class="badge both">🐾 Perros y Gatos</span>';
+      if (product.apto_perro) return '<span class="badge dog">🐶 Solo Perros</span>';
+      if (product.apto_gato) return '<span class="badge cat">🐱 Solo Gatos</span>';
+      return '<span class="badge category">Mascotas</span>';
+    }
+
+    function pseudoDescription(product) {
+      let target = 'mascotas';
+      if (product.apto_perro && product.apto_gato) target = 'perros y gatos por igual';
+      else if (product.apto_perro) target = 'caninos';
+      else if (product.apto_gato) target = 'felinos';
+      return `Artículo de alta calidad testeado para el uso diario en ${target}. Presentación en ${product.unidad_medida}.`;
+    }
+
+    function validateProduct(product, checkUniqueId = true) {
+      const stringFields = ['id_producto', 'codigo_barras', 'nombre', 'marca', 'categoria', 'unidad_medida'];
+      for (const field of stringFields) {
+        if (!product[field] || typeof product[field] !== 'string' || !product[field].trim()) return `El campo ${field} es obligatorio.`;
+      }
+      if (checkUniqueId && state.products.some(p => normalize(p.id_producto) === normalize(product.id_producto))) {
+        return 'El id_producto ya existe. La clave primaria debe ser única.';
+      }
+      if (!product.apto_perro && !product.apto_gato) return 'Debe seleccionar al menos un tipo de mascota destino.';
+      if (Number.isNaN(product.precio_unitario) || product.precio_unitario < 0) return 'El precio unitario debe ser un número válido.';
+      if (!Number.isInteger(product.stock_actual) || product.stock_actual < 0) return 'El stock debe ser un entero válido.';
+      return null;
+    }
+
+    function renderHero() {
+      dom.heroProducts.textContent = state.products.length;
+      dom.heroCategories.textContent = new Set(state.products.map(p => p.categoria)).size;
+      dom.heroDogsCount.textContent = state.products.filter(p => p.apto_perro).length;
+      dom.heroCatsCount.textContent = state.products.filter(p => p.apto_gato).length;
+    }
+
+    function sortProducts(products, type) {
+      const list = [...products];
+      switch (type) {
+        case 'price-asc': return list.sort((a, b) => a.precio_unitario - b.precio_unitario);
+        case 'price-desc': return list.sort((a, b) => b.precio_unitario - a.precio_unitario);
+        case 'name-asc': return list.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        case 'stock-desc': return list.sort((a, b) => b.stock_actual - a.stock_actual);
+        default: return list;
+      }
+    }
+
+    function applyFilters() {
+      const search = normalize(dom.searchInput.value);
+      const category = dom.categoryFilter.value;
+      const animal = dom.animalFilter.value;
+      const stockSelection = dom.inStockFilter.value; 
+      const sortType = dom.sortFilter.value;
+
+      const filtered = state.products.filter(product => {
+        const matchesSearch = !search || normalize(product.nombre).includes(search) || normalize(product.marca).includes(search);
+        const matchesCategory = !category || product.categoria === category;
+        
+        let matchesStock = product.stock_actual > 0;
+        if (stockSelection === 'low-stock') {
+          matchesStock = product.stock_actual > 0 && product.stock_actual <= 10;
+        }
+        
+        let matchesAnimal = true;
+        if (animal === 'dog') matchesAnimal = product.apto_perro;
+        if (animal === 'cat') matchesAnimal = product.apto_gato;
+
+        return matchesSearch && matchesCategory && matchesStock && matchesAnimal;
+      });
+
+      state.filtered = sortProducts(filtered, sortType);
+      renderProducts();
+      renderAdminPanel(); 
+      
+      const totalStock = state.filtered.reduce((acc, p) => acc + p.stock_actual, 0);
+      dom.visibleResultsChip.textContent = `${state.filtered.length} disponibles`;
+      dom.visibleStockChip.textContent = `Stock visible: ${totalStock}`;
+    }
+
+    function renderProducts() {
+      if (!state.filtered.length) {
+        dom.productGrid.innerHTML = '<div class="empty"><h3>No hay productos en stock</h3><p>Todos los artículos se han agotado o no coinciden con los filtros.</p></div>';
+        return;
+      }
+
+      dom.productGrid.innerHTML = state.filtered.map(product => {
+        const isLowStock = product.stock_actual <= 10;
+        const stockClass = isLowStock ? 'low' : 'ok';
+        const stockLabel = isLowStock ? 'Stock bajo' : 'Stock disponible';
+        const isEditing = state.editingProductId === product.id_producto;
+
+        let interactionHTML = '';
+        if (state.currentRole === 'admin') {
+          if (isEditing) {
+            interactionHTML = `
+              <div class="inline-edit-form">
+                <div>
+                  <label>Precio Unitario (ARS):</label>
+                  <input type="number" id="inlinePrice-${product.id_producto}" value="${product.precio_unitario}" min="0" step="1">
+                </div>
+                <div>
+                  <label>Stock Actual:</label>
+                  <input type="number" id="inlineStock-${product.id_producto}" value="${product.stock_actual}" min="1" step="1">
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="mini-btn" onclick="saveInlineEdit('${product.id_producto}')" style="background:var(--success); color:white; flex:1;">✔ Guardar</button>
+                  <button class="mini-btn remove" onclick="cancelInlineEdit()" style="flex:1;">❌ Cancelar</button>
+                </div>
+              </div>
+            `;
+          } else {
+            interactionHTML = `
+              <button class="btn-secondary" onclick="enableInlineEdit('${product.id_producto}')" style="width:100%; font-size:13px; font-weight:bold; border: 1px dashed var(--primary-dark)">🛠️ Modificar Precio/Stock</button>
+            `;
+          }
+        } else {
+          interactionHTML = `
+            <div class="card-actions">
+              <button class="btn-add" onclick="addToCart('${product.id_producto}')">Añadir al carrito</button>
+              <input class="qty-input" type="number" min="1" max="${product.stock_actual}" id="qty-${product.id_producto}" value="1" />
+            </div>
+          `;
+        }
+
+        return `
+          <article class="card">
+            <div class="card-top">
+              <div style="display:flex; gap:12px; min-width:0;">
+                <div class="emoji">${productEmoji(product.categoria)}</div>
+                <div class="title-wrap">
+                  <h3 class="title">${escapeHtml(product.nombre)}</h3>
+                  <div class="brand">${escapeHtml(product.marca)}</div>
+                </div>
+              </div>
+              <div class="price">${formatter.format(product.precio_unitario)}</div>
+            </div>
+            <div class="badges">
+              <span class="badge category">${escapeHtml(product.categoria)}</span>
+              ${getAnimalBadgeAndLabel(product)}
+              <span class="badge ${stockClass}">${stockLabel}</span>
+            </div>
+            <div class="desc">${escapeHtml(pseudoDescription(product))}</div>
+            <div class="meta-grid">
+              <div><strong>ID</strong>${escapeHtml(product.id_producto)}</div>
+              <div><strong>Código</strong>${escapeHtml(product.codigo_barras)}</div>
+              <div><strong>Unidad</strong>${escapeHtml(product.unidad_medida)}</div>
+              <div><strong>Stock</strong>${product.stock_actual}</div>
+            </div>
+            <div style="margin-top:10px;">
+              ${interactionHTML}
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    window.enableInlineEdit = function(productId) {
+      state.editingProductId = productId;
+      renderProducts();
+    };
+
+    window.cancelInlineEdit = function() {
+      state.editingProductId = null;
+      renderProducts();
+    };
+
+    window.saveInlineEdit = function(productId) {
+      const priceInput = document.getElementById(`inlinePrice-${productId}`);
+      const stockInput = document.getElementById(`inlineStock-${productId}`);
+      
+      const newPrice = Number(priceInput.value);
+      const newStock = Number(stockInput.value);
+
+      const product = state.products.find(p => p.id_producto === productId);
+      if (product) {
+        if (newPrice < 0 || newStock < 0) {
+          alert("Los valores numéricos no pueden ser de carácter negativo.");
+          return;
+        }
+        product.precio_unitario = newPrice;
+        product.stock_actual = newStock;
+        saveState(PRODUCT_KEY, state.products);
+        state.editingProductId = null;
+        applyFilters();
+        renderHero();
+        renderCart();
+      }
+    };
+
+    function renderAdminPanel() {
+      const outOfStockProducts = state.products.filter(p => p.stock_actual === 0);
+      
+      if (!outOfStockProducts.length) {
+        dom.adminOutofStockList.innerHTML = `
+          <div style="padding: 16px; text-align: center; color: #a56a6a; background: #fffafb; border-radius: 8px; font-weight:bold;">
+            ✅ Niveles estables. No se registran productos con stock en cero en este momento.
+          </div>
+        `;
+        return;
+      }
+
+      dom.adminOutofStockList.innerHTML = outOfStockProducts.map(p => `
+        <div style="display: flex; flex-direction: column; gap: 10px; background: #ffffff; padding: 14px; border-radius: 12px; border: 1px solid #f2d4d4;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <strong style="color: #2f4347;">[${escapeHtml(p.id_producto)}] ${escapeHtml(p.nombre)}</strong> 
+              <span style="color: var(--muted); font-size: 13px;"> · Marca: ${escapeHtml(p.marca)} · Categoria: ${escapeHtml(p.categoria)}</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="mini-btn" onclick="replenishQuickStock('${p.id_producto}')" style="background: #7bc79e; color: white; font-weight: bold;">+10 Unidades</button>
+              <button class="mini-btn remove" onclick="deleteProduct('${p.id_producto}')" style="font-weight: bold;">Eliminar</button>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; background:#fdf8f9; padding:8px; border-radius:8px; border:1px dashed #e59797;">
+            <label style="font-size:13px; font-weight:bold; color:#c46262;">Ajustar precio antes de reponer ($):</label>
+            <input type="number" id="panelPrice-${p.id_producto}" value="${p.precio_unitario}" style="width:120px; padding:6px; border-radius:6px; border:1px solid #f2d4d4;" min="0" step="1">
+            <button class="mini-btn" onclick="savePanelPrice('${p.id_producto}')" style="background:var(--primary-dark); color:white; padding:6px 10px;">Actualizar Precio</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.savePanelPrice = function(productId) {
+      const inputPrice = document.getElementById(`panelPrice-${productId}`);
+      const priceValue = Number(inputPrice.value);
+      if(priceValue < 0) {
+        alert("El precio no puede ser un valor negativo.");
+        return;
+      }
+      const product = state.products.find(p => p.id_producto === productId);
+      if(product) {
+        product.precio_unitario = priceValue;
+        saveState(PRODUCT_KEY, state.products);
+        alert(`Precio de ${product.nombre} actualizado a ${formatter.format(priceValue)}`);
+        applyFilters();
+      }
+    };
+
+    window.replenishQuickStock = function(productId) {
+      const product = state.products.find(p => p.id_producto === productId);
+      if (!product) return;
+      product.stock_actual = 10; 
+      saveState(PRODUCT_KEY, state.products);
+      alert(`Se repusieron 10 unidades de: ${product.nombre}. Volverá a estar visible para clientes.`);
+      applyFilters();
+    };
+
+    window.deleteProduct = function(productId) {
+      if (!confirm(`¿Deseas eliminar permanentemente el producto ${productId}?`)) return;
+      state.products = state.products.filter(p => p.id_producto !== productId);
+      saveState(PRODUCT_KEY, state.products);
+      state.cart = state.cart.filter(item => item.id_producto !== productId);
+      saveState(CART_KEY, state.cart);
+      fillCategoryOptions();
+      renderHero();
+      applyFilters();
+      renderCart();
+    };
+
+    // CONTROLADOR MULTI-ROL (BARRA SUPERIOR CON DINÁMICA DE GRILLA REESTRUCTURADA)
+    dom.roleSwitcher.addEventListener('change', (e) => {
+      state.currentRole = e.target.value;
+      state.editingProductId = null; 
+      
+      if (state.currentRole === 'admin') {
+        dom.adminHeroActions.style.display = 'flex';
+        dom.adminStockSection.style.display = 'block';
+        dom.openModalBtnSecondary.style.display = 'inline-block';
+        
+        // CORRECCIÓN: Oculta la columna del carrito por completo y adapta la grilla
+        if (dom.cartColumn) dom.cartColumn.style.display = 'none'; 
+        if (dom.mainLayout) dom.mainLayout.classList.add('admin-layout');
+        
+      } else {
+        dom.adminHeroActions.style.display = 'none';
+        dom.adminStockSection.style.display = 'none';
+        dom.openModalBtnSecondary.style.display = 'none';
+        
+        // CORRECCIÓN: Muestra la columna del carrito de compras para el Cliente
+        if (dom.cartColumn) dom.cartColumn.style.display = 'block'; 
+        if (dom.mainLayout) dom.mainLayout.classList.remove('admin-layout');
+      }
+      applyFilters();
+    });
+
+    function clearFilters() {
+      dom.searchInput.value = '';
+      dom.categoryFilter.value = '';
+      dom.animalFilter.value = 'all';
+      dom.inStockFilter.value = 'all';
+      dom.sortFilter.value = 'featured';
+      applyFilters();
+    }
+
+    window.addToCart = function(productId) {
+      const product = state.products.find(p => p.id_producto === productId);
+      if (!product || product.stock_actual <= 0) return;
+      
+      const qtyInput = document.getElementById(`qty-${productId}`);
+      const quantity = Math.max(1, Math.min(product.stock_actual, Number(qtyInput?.value || 1)));
+      const existing = state.cart.find(item => item.id_producto === productId);
+      
+      if (existing) {
+        existing.cantidad = Math.min(existing.cantidad + quantity, product.stock_actual);
+      } else {
+        state.cart.push({ id_producto: productId, cantidad: quantity });
+      }
+      saveState(CART_KEY, state.cart);
+      renderCart();
+    };
+
+    function cartDetails() {
+      return state.cart.map(item => {
+        const product = state.products.find(p => p.id_producto === item.id_producto);
+        if (!product) return null;
+        return { ...product, cantidad: item.cantidad, subtotal: item.cantidad * product.precio_unitario };
+      }).filter(Boolean);
+    }
+
+    function renderCart() {
+      const items = cartDetails();
+      dom.emptyCart.style.display = items.length ? 'none' : 'block';
+      if (!items.length) {
+        dom.cartList.innerHTML = '';
+      } else {
+        dom.cartList.innerHTML = items.map(item => `
+          <div class="cart-item">
+            <div class="cart-row">
+              <div>
+                <div class="cart-name">${escapeHtml(item.nombre)}</div>
+                <div class="cart-meta">${escapeHtml(item.marca)} · ${formatter.format(item.precio_unitario)}</div>
+              </div>
+              <strong>${formatter.format(item.subtotal)}</strong>
+            </div>
+            <div class="cart-row">
+              <span class="cart-meta">Cantidad: ${item.cantidad}</span>
+              <div class="cart-actions">
+                <button class="mini-btn" onclick="changeCartQty('${item.id_producto}', 1)">+1</button>
+                <button class="mini-btn" onclick="changeCartQty('${item.id_producto}', -1)">-1</button>
+                <button class="mini-btn remove" onclick="removeFromCart('${item.id_producto}')">Quitar</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      dom.cartLines.textContent = items.length;
+      dom.cartUnits.textContent = items.reduce((s, i) => s + i.cantidad, 0);
+      dom.cartTotal.textContent = formatter.format(items.reduce((s, i) => s + i.subtotal, 0));
+    }
+
+    window.changeCartQty = function(productId, delta) {
+      const cartItem = state.cart.find(item => item.id_producto === productId);
+      const product = state.products.find(p => p.id_producto === productId);
+      if (!cartItem || !product) return;
+      cartItem.cantidad = Math.max(1, Math.min(product.stock_actual, cartItem.cantidad + delta));
+      saveState(CART_KEY, state.cart);
+      renderCart();
+    };
+
+    window.removeFromCart = function(productId) {
+      state.cart = state.cart.filter(item => item.id_producto !== productId);
+      saveState(CART_KEY, state.cart);
+      renderCart();
+    };
+
+    function clearCart() {
+      state.cart = [];
+      saveState(CART_KEY, state.cart);
+      renderCart();
+    }
+
+    function simulateCheckout() {
+        const items = cartDetails();
+        if (!items.length) return;
+
+        items.forEach(cartItem => {
+          const productInState = state.products.find(p => p.id_producto === cartItem.id_producto);
+          if (productInState) {
+            productInState.stock_actual = Math.max(0, productInState.stock_actual - cartItem.cantidad);
+          }
+        });
+
+        saveState(PRODUCT_KEY, state.products);
+        alert(`¡Transacción simulada! Inventario descontado con éxito.`);
+        clearCart();
+        fillCategoryOptions();
+        renderHero();   
+        applyFilters(); 
+    }
+
+    function showModal() {
+      dom.modalBackdrop.classList.add('active');
+      document.getElementById('id_producto').focus();
+    }
+
+    function hideModal() {
+      dom.modalBackdrop.classList.remove('active');
+      dom.formFeedback.className = 'feedback';
+      dom.formFeedback.textContent = '';
+    }
+
+    dom.applyFiltersBtn.addEventListener('click', applyFilters);
+    dom.clearFiltersBtn.addEventListener('click', clearFilters);
+    dom.searchInput.addEventListener('input', applyFilters);
+    dom.categoryFilter.addEventListener('change', applyFilters);
+    dom.animalFilter.addEventListener('change', applyFilters);
+    dom.sortFilter.addEventListener('change', applyFilters);
+
+    dom.openModalBtn.addEventListener('click', showModal);
+    dom.openModalBtnSecondary.addEventListener('click', showModal);
+    dom.closeModalBtn.addEventListener('click', hideModal);
+    dom.resetFormBtn.addEventListener('click', () => dom.productForm.reset());
+    dom.modalBackdrop.addEventListener('click', (e) => { if (e.target === dom.modalBackdrop) hideModal(); });
+
+    dom.productForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const product = {
+        id_producto: document.getElementById('id_producto').value.trim(),
+        codigo_barras: document.getElementById('codigo_barras').value.trim(),
+        nombre: document.getElementById('nombre').value.trim(),
+        marca: document.getElementById('marca').value.trim(),
+        categoria: document.getElementById('categoria').value.trim(),
+        precio_unitario: Number(document.getElementById('precio_unitario').value),
+        stock_actual: Number(document.getElementById('stock_actual').value),
+        unidad_medida: document.getElementById('unidad_medida').value.trim(),
+        apto_perro: document.getElementById('apto_perro').checked,
+        apto_gato: document.getElementById('apto_gato').checked,
+      };
+
+      const error = validateProduct(product, true);
+      if (error) {
+        dom.formFeedback.className = 'feedback error';
+        dom.formFeedback.textContent = error;
+        return;
+      }
+
+      state.products.unshift(product);
+      saveState(PRODUCT_KEY, state.products);
+      
+      fillCategoryOptions();
+      renderHero();
+      applyFilters();
+      
+      dom.formFeedback.className = 'feedback success';
+      dom.formFeedback.textContent = 'Producto guardado correctamente.';
+      setTimeout(() => {
+        dom.productForm.reset();
+        hideModal();
+      }, 850);
+    });
+
+    dom.clearCartBtn.addEventListener('click', clearCart);
+    dom.simulateCheckoutBtn.addEventListener('click', simulateCheckout);
+
+    // Inicializar app forzando la vista del cliente primero
+    dom.roleSwitcher.value = "client";
+    dom.adminHeroActions.style.display = 'none';
+    dom.openModalBtnSecondary.style.display = 'none';
+
+    fillCategoryOptions();
+    renderHero();
+    applyFilters();
+    renderCart();
+  </script>
+</body>
+</html>
